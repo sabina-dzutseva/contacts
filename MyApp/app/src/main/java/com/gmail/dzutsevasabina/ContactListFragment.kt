@@ -6,25 +6,54 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.gmail.dzutsevasabina.databinding.FragmentListBinding
 
 class ContactListFragment : Fragment() {
 
+    interface ResultReceiver {
+        fun processList(contacts: ArrayList<Contact>)
+    }
+
     private var listener: View.OnClickListener? = null
+    private var binder: ServiceBinder? = null
     private var _listBinding: FragmentListBinding? = null
     private val listBinding get() = _listBinding!!
+
+    private val resultReceiver: ResultReceiver = object : ResultReceiver {
+        override fun processList(contacts: ArrayList<Contact>) {
+            val view: View = listBinding.root
+            view.post {
+                listBinding.background.setBackgroundColor(
+                    ContextCompat.getColor(
+                        view.context,
+                        R.color.white
+                    )
+                )
+                listBinding.contactImage.setImageResource(contacts[0].image)
+                listBinding.contactName.text = contacts[0].name
+                listBinding.contactPhoneNumber.text = contacts[0].phoneNumber1
+                view.setOnClickListener { listener?.onClick(view) }
+            }
+        }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is View.OnClickListener) {
             listener = context
         }
+
+        if (context is ServiceBinder) {
+            binder = context
+        }
     }
 
     override fun onDetach() {
         super.onDetach()
         listener = null
+        binder = null
     }
 
     override fun onCreateView(
@@ -38,9 +67,8 @@ class ContactListFragment : Fragment() {
         }
 
         _listBinding = FragmentListBinding.inflate(inflater, container, false)
-        val view = listBinding.root
-        view.setOnClickListener { listener?.onClick(view) }
-        return view
+        binder?.getService()?.getContactsList(resultReceiver)
+        return listBinding.root
     }
 
     override fun onDestroyView() {
