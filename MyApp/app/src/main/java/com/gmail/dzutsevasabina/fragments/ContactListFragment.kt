@@ -1,4 +1,4 @@
-package com.gmail.dzutsevasabina
+package com.gmail.dzutsevasabina.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -8,7 +8,10 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.gmail.dzutsevasabina.R
+import com.gmail.dzutsevasabina.interfaces.ServiceBinder
 import com.gmail.dzutsevasabina.databinding.FragmentListBinding
+import com.gmail.dzutsevasabina.model.Contact
 
 class ContactListFragment : Fragment() {
 
@@ -24,17 +27,19 @@ class ContactListFragment : Fragment() {
     private val resultReceiver: ResultReceiver = object : ResultReceiver {
         override fun processList(contacts: ArrayList<Contact>) {
             val view: View = listBinding.root
-            view.post {
-                listBinding.background.setBackgroundColor(
-                    ContextCompat.getColor(
-                        view.context,
-                        R.color.white
+            with(listBinding) {
+                view.post {
+                    background.setBackgroundColor(
+                        ContextCompat.getColor(
+                            view.context,
+                            R.color.white
+                        )
                     )
-                )
-                listBinding.contactImage.setImageResource(contacts[0].image)
-                listBinding.contactName.text = contacts[0].name
-                listBinding.contactPhoneNumber.text = contacts[0].phoneNumber1
-                view.setOnClickListener { listener?.onClick(view) }
+                    contactImage.setImageResource(contacts[0].image)
+                    contactName.text = contacts[0].name
+                    contactPhoneNumber.text = contacts[0].phoneNumber1
+                    view.setOnClickListener { listener?.onClick(view) }
+                }
             }
         }
     }

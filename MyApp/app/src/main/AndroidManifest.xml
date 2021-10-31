@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gmail.dzutsevasabina">
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,6 +17,14 @@
             </intent-filter>
         </activity>
         <service android:name=".ContactService" />
+        <receiver
+            android:name=".BirthdayAlertReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.gmail.dzutsevasabina" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

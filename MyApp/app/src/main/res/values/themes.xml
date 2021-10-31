@@ -4,7 +4,7 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/grayish_amber</item>
         <item name="colorPrimaryDark">@color/grayish_amber</item>
-        <item name="colorAccent">@color/pale_yellow</item>
+        <item name="colorAccent">@color/brown</item>
     </style>
 
     <style name="Toolbar">

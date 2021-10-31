@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyApp</string>
+    <string name="app_name">Contacts</string>
     <string name="fragment1_title">Список контактов</string>
     <string name="fragment2_title">Детали контакта</string>
     <string name="contact_name">Иванов Иван Иванович</string>
@@ -8,4 +8,10 @@
     <string name="contact_email1">ivanov@email.com</string>
     <string name="contact_email2">ivanov2@email.com</string>
     <string name="contact_description">Хороший человек с работы.</string>
+    <string name="birthday">День рождения: </string>
+    <string name="notify_about_birthday">Уведомлять о дне рождения</string>
+    <string name="notification_title">День рождения контакта</string>
+    <string name="notification_text">Сегодня день рождения отмечает %1$s</string>
+    <string name="channel_name">channel</string>
+    <string name="channel_id">id</string>
 </resources>

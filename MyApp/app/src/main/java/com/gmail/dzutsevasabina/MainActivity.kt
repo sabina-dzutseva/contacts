@@ -1,18 +1,19 @@
 package com.gmail.dzutsevasabina
 
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.view.View
 import com.gmail.dzutsevasabina.databinding.ActivityMainBinding
+import com.gmail.dzutsevasabina.fragments.ContactDetailsFragment
+import com.gmail.dzutsevasabina.fragments.ContactListFragment
+import com.gmail.dzutsevasabina.interfaces.ServiceBinder
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, ServiceBinder {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var broadcastReceiver: BirthdayAlertReceiver
 
     private var service: ContactService? = null
     private var isBound: Boolean = false
@@ -24,7 +25,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ServiceBinder {
             isBound = true
 
             if (isCreated) {
-                addListFragment()
+                if (intent.getIntExtra("FRAGMENT_ID", 0) == R.layout.fragment_details) {
+                    addDetailsFragment(intent.getIntExtra("CONTACT_DETAIL_ID", 0))
+                } else {
+                    if (isCreated) {
+                        addListFragment()
+                    }
+                }
             }
         }
 
@@ -40,6 +47,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ServiceBinder {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        broadcastReceiver = BirthdayAlertReceiver()
+        registerReceiver(broadcastReceiver, IntentFilter(ALARM_SERVICE))
+
         val intent = Intent(this, ContactService::class.java)
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
 
@@ -49,6 +59,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ServiceBinder {
     override fun onDestroy() {
         super.onDestroy()
         unbindService(serviceConnection)
+        unregisterReceiver(broadcastReceiver)
     }
 
     private fun addListFragment() {
@@ -59,8 +70,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ServiceBinder {
             .commit()
     }
 
-    private fun addDetailsFragment() {
-        val fragment2 = ContactDetailsFragment.newInstance(0)
+    private fun addDetailsFragment(id: Int) {
+        val fragment2 = ContactDetailsFragment.newInstance(id)
         val transaction = supportFragmentManager.beginTransaction()
         transaction
             .replace(binding.fragmentsContainer.id, fragment2)
@@ -68,7 +79,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, ServiceBinder {
             .commit()
     }
 
-    override fun onClick(p0: View?) {
-        addDetailsFragment()
+    override fun onClick(view: View?) {
+        addDetailsFragment(0)
     }
 }
