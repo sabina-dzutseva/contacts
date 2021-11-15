@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,14 +21,14 @@ import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.interfaces.ServiceBinder
 import com.gmail.dzutsevasabina.databinding.FragmentDetailsBinding
 import com.gmail.dzutsevasabina.interfaces.ButtonClickListener
-import com.gmail.dzutsevasabina.model.Contact
+import com.gmail.dzutsevasabina.model.DetailedContact
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ContactDetailsFragment : Fragment(), ButtonClickListener {
 
     interface ResultReceiver {
-        fun processContact(contact: Contact)
+        fun processContact(contact: DetailedContact)
     }
 
     private var binder: ServiceBinder? = null
@@ -38,12 +39,12 @@ class ContactDetailsFragment : Fragment(), ButtonClickListener {
 
     private val resultReceiver: ResultReceiver =
         object : ResultReceiver {
-            override fun processContact(contact: Contact) {
+            override fun processContact(contact: DetailedContact) {
                 val view: View = detailsBinding.root
                 with(detailsBinding) {
                     view.post {
                         view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.white))
-                        contactImage.setImageResource(contact.image)
+                        contactImage.setImageURI(Uri.parse(contact.image))
 
                         contactName.text = contact.name
 
@@ -97,7 +98,7 @@ class ContactDetailsFragment : Fragment(), ButtonClickListener {
         }
 
         _detailsBinding = FragmentDetailsBinding.inflate(inflater, container, false)
-        val id = arguments?.getInt("ARG_ID")
+        val id = arguments?.getString("ARG_ID")
         if (id != null) {
             binder?.getService()?.getContactDetail(resultReceiver, id)
         }
@@ -105,10 +106,10 @@ class ContactDetailsFragment : Fragment(), ButtonClickListener {
         return detailsBinding.root
     }
 
-    override fun onButtonClick(button: Button, contact: Contact) {
+    override fun onButtonClick(button: Button, contact: DetailedContact) {
         val alarmManager: AlarmManager = context?.getSystemService(ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, BirthdayAlertReceiver::class.java)
-        intent.putExtra("CONTACT_ID", arguments?.getInt("ARG_ID"))
+        intent.putExtra("CONTACT_ID", arguments?.getString("ARG_ID"))
         val message: String = String.format(resources.getString(R.string.notification_text, contact.name))
         intent.putExtra("MESSAGE", message)
 
@@ -119,7 +120,7 @@ class ContactDetailsFragment : Fragment(), ButtonClickListener {
             if (button.isChecked) {
                 contact.sendBirthdayNotifications = true
 
-                val date = SimpleDateFormat("dd.MM", Locale.US).parse(contact.birthday)
+                val date = SimpleDateFormat("MM.dd", Locale.US).parse(contact.birthday)
                 val calendar = GregorianCalendar.getInstance()
                 if (date != null) {
                     calendar.time = date
@@ -172,7 +173,7 @@ class ContactDetailsFragment : Fragment(), ButtonClickListener {
     }
 
     companion object {
-        fun newInstance(id: Int) = ContactDetailsFragment().apply {
+        fun newInstance(id: String) = ContactDetailsFragment().apply {
             arguments = bundleOf(
                 "ARG_ID" to id
             )

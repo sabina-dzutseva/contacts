@@ -14,4 +14,8 @@
     <string name="notification_text">Сегодня день рождения отмечает %1$s</string>
     <string name="channel_name">channel</string>
     <string name="channel_id">id</string>
+    <string name="permission_dialog_title">Требуется разрешение!</string>
+    <string name="permission_dialog_message">Для работы приложения необходимо разрешить доступ к контактам.</string>
+    <string name="cancel">Отмена</string>
+    <string name="ok">Ок</string>
 </resources>

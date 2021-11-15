@@ -1,6 +1,7 @@
 package com.gmail.dzutsevasabina.fragments
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,21 +12,22 @@ import androidx.fragment.app.Fragment
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.interfaces.ServiceBinder
 import com.gmail.dzutsevasabina.databinding.FragmentListBinding
-import com.gmail.dzutsevasabina.model.Contact
+import com.gmail.dzutsevasabina.interfaces.ContactClickListener
+import com.gmail.dzutsevasabina.model.BriefContact
 
 class ContactListFragment : Fragment() {
 
     interface ResultReceiver {
-        fun processList(contacts: ArrayList<Contact>)
+        fun processList(contacts: ArrayList<BriefContact>)
     }
 
-    private var listener: View.OnClickListener? = null
+    private var listener: ContactClickListener? = null
     private var binder: ServiceBinder? = null
     private var _listBinding: FragmentListBinding? = null
     private val listBinding get() = _listBinding!!
 
     private val resultReceiver: ResultReceiver = object : ResultReceiver {
-        override fun processList(contacts: ArrayList<Contact>) {
+        override fun processList(contacts: ArrayList<BriefContact>) {
             val view: View = listBinding.root
             with(listBinding) {
                 view.post {
@@ -35,10 +37,10 @@ class ContactListFragment : Fragment() {
                             R.color.white
                         )
                     )
-                    contactImage.setImageResource(contacts[0].image)
+                    contactImage.setImageURI(Uri.parse(contacts[0].image))
                     contactName.text = contacts[0].name
                     contactPhoneNumber.text = contacts[0].phoneNumber1
-                    view.setOnClickListener { listener?.onClick(view) }
+                    view.setOnClickListener { listener?.onClick(view, contacts[0].id) }
                 }
             }
         }
@@ -46,7 +48,7 @@ class ContactListFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is View.OnClickListener) {
+        if (context is ContactClickListener) {
             listener = context
         }
 
