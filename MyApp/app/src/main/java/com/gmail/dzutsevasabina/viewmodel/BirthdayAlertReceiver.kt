@@ -1,4 +1,4 @@
-package com.gmail.dzutsevasabina
+package com.gmail.dzutsevasabina.viewmodel
 
 import android.app.AlarmManager
 import android.app.NotificationChannel
@@ -10,6 +10,8 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import com.gmail.dzutsevasabina.R
+import com.gmail.dzutsevasabina.view.activity.MainActivity
 import java.util.*
 
 class BirthdayAlertReceiver : BroadcastReceiver() {

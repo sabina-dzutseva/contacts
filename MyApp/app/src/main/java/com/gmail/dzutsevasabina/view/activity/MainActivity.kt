@@ -1,55 +1,28 @@
-package com.gmail.dzutsevasabina
+package com.gmail.dzutsevasabina.view.activity
 
 import android.content.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.IBinder
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.gmail.dzutsevasabina.databinding.ActivityMainBinding
-import com.gmail.dzutsevasabina.fragments.ContactDetailsFragment
-import com.gmail.dzutsevasabina.fragments.ContactListFragment
-import com.gmail.dzutsevasabina.interfaces.ServiceBinder
 import android.Manifest
 import android.content.pm.PackageManager
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
-import com.gmail.dzutsevasabina.interfaces.ContactClickListener
+import com.gmail.dzutsevasabina.viewmodel.BirthdayAlertReceiver
+import com.gmail.dzutsevasabina.R
+import com.gmail.dzutsevasabina.view.interfaces.ContactClickListener
+import com.gmail.dzutsevasabina.view.fragment.ContactDetailsFragment
+import com.gmail.dzutsevasabina.view.fragment.ContactListFragment
 
-
-class MainActivity : AppCompatActivity(), ContactClickListener, ServiceBinder {
+class MainActivity : AppCompatActivity(), ContactClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var broadcastReceiver: BirthdayAlertReceiver
-
-    private var service: ContactService? = null
-    private var isBound: Boolean = false
     private var isCreated: Boolean = false
-
-    private val serviceConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, binder: IBinder) {
-            val b = binder as ContactService.ContactBinder
-            service = b.getService()
-            isBound = true
-
-            if (isCreated) {
-                if (intent.getIntExtra("FRAGMENT_ID", 0) == R.layout.fragment_details) {
-                    intent.getStringExtra("CONTACT_DETAIL_ID")?.let { addDetailsFragment(it) }
-                } else {
-                    if (isCreated) {
-                        addListFragment()
-                    }
-                }
-            }
-        }
-
-        override fun onServiceDisconnected(name: ComponentName) {
-            isBound = false
-        }
-    }
-
-    override fun getService(): ContactService? = service
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +32,6 @@ class MainActivity : AppCompatActivity(), ContactClickListener, ServiceBinder {
 
         broadcastReceiver = BirthdayAlertReceiver()
         registerReceiver(broadcastReceiver, IntentFilter(ALARM_SERVICE))
-        val intent = Intent(this, ContactService::class.java)
         isCreated = savedInstanceState == null
 
         val requestPermissionLauncher =
@@ -67,7 +39,7 @@ class MainActivity : AppCompatActivity(), ContactClickListener, ServiceBinder {
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
                 if (isGranted) {
-                    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+                    addFragment()
                 }
             }
 
@@ -76,36 +48,24 @@ class MainActivity : AppCompatActivity(), ContactClickListener, ServiceBinder {
                 this,
                 Manifest.permission.READ_CONTACTS
             ) == PackageManager.PERMISSION_GRANTED -> {
-                bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+                addFragment()
             }
 
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
                 Manifest.permission.READ_CONTACTS
             ) -> {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(getString(R.string.permission_dialog_title))
-                    .setMessage(getString(R.string.permission_dialog_message))
-                    .setCancelable(true)
-                    .setPositiveButton(getString(R.string.ok)) { dialog, id ->
-                        requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-                    }
-                    .setNegativeButton(getString(R.string.cancel)) { dialog, id ->
-                        dialog.cancel()
-                    }
-                builder.create().show()
+                createDialog(requestPermissionLauncher)
             }
 
             else -> {
                 requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
             }
         }
-
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unbindService(serviceConnection)
         unregisterReceiver(broadcastReceiver)
     }
 
@@ -128,5 +88,31 @@ class MainActivity : AppCompatActivity(), ContactClickListener, ServiceBinder {
 
     override fun onClick(view: View?, id: String) {
         addDetailsFragment(id)
+    }
+
+    private fun addFragment() {
+        if (isCreated) {
+            if (intent.getIntExtra("FRAGMENT_ID", 0) == R.layout.fragment_details) {
+                intent.getStringExtra("CONTACT_DETAIL_ID")?.let { addDetailsFragment(it) }
+            } else {
+                if (isCreated) {
+                    addListFragment()
+                }
+            }
+        }
+    }
+
+    private fun createDialog(requestPermissionLauncher: ActivityResultLauncher<String>) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.permission_dialog_title))
+            .setMessage(getString(R.string.permission_dialog_message))
+            .setCancelable(true)
+            .setPositiveButton(getString(R.string.ok)) { dialog, id ->
+                requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+            }
+            .setNegativeButton(getString(R.string.cancel)) { dialog, id ->
+                dialog.cancel()
+            }
+        builder.create().show()
     }
 }

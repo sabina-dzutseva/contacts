@@ -1,4 +1,4 @@
-package com.gmail.dzutsevasabina.interfaces
+package com.gmail.dzutsevasabina.view.interfaces
 
 import android.view.View
 
