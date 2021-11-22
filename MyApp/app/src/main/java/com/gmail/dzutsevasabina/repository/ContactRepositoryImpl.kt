@@ -1,77 +1,20 @@
-package com.gmail.dzutsevasabina
+package com.gmail.dzutsevasabina.repository
 
-import android.app.Service
-import android.content.Intent
-import android.os.Binder
-import android.os.IBinder
+import android.content.ContentResolver
+import android.content.Context
 import android.provider.ContactsContract
-import com.gmail.dzutsevasabina.fragments.ContactDetailsFragment
-import com.gmail.dzutsevasabina.fragments.ContactListFragment
 import com.gmail.dzutsevasabina.model.BriefContact
 import com.gmail.dzutsevasabina.model.DetailedContact
-import java.util.concurrent.*
 
-class ContactService : Service() {
+class ContactRepositoryImpl : ContactRepository {
+    private lateinit var contentResolver: ContentResolver
 
-    private val binder = ContactBinder()
-    private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-
-    override fun onBind(p0: Intent?): IBinder? {
-        return binder
-    }
-
-    fun getContactsList(receiver: ContactListFragment.ResultReceiver) {
-        val contacts = initContactList()
-        executor.schedule({ receiver.processList(contacts) }, 5, TimeUnit.MILLISECONDS)
-    }
-
-    fun getContactDetail(receiver: ContactDetailsFragment.ResultReceiver, id: String) {
-        val contact = initContact(id)
-        executor.schedule(
-            {
-                if (contact != null) {
-                    receiver.processContact(contact)
-                }
-            }, 2, TimeUnit.MILLISECONDS
-        )
-    }
-
-    inner class ContactBinder : Binder() {
-        fun getService(): ContactService = this@ContactService
-    }
-
-    private fun initContactList(): ArrayList<BriefContact> {
-        val contacts = ArrayList<BriefContact>()
-
-        val contentResolver = contentResolver
-        val contactsUri = ContactsContract.Contacts.CONTENT_URI
-
-        contentResolver.query(contactsUri, null, null, null, null).use { contactsCursor ->
-            if (contactsCursor != null) {
-                while (contactsCursor.moveToNext()) {
-                    val id = contactsCursor.getString(
-                        contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID)
-                    )
-                    val image = contactsCursor.getString(
-                        contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI)
-                    )
-                    val name = contactsCursor.getString(
-                        contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)
-                    )
-                    val phone = getPhones(id)
-
-                    contacts.add(BriefContact(id, image, name, phone[0]))
-                }
-            }
-        }
-        return contacts
-    }
-
-    private fun initContact(id: String): DetailedContact? {
+    override fun getContact(id: String, context: Context): DetailedContact? {
         var contact: DetailedContact? = null
 
-        val contentResolver = contentResolver
         val contactsUri = ContactsContract.Contacts.CONTENT_URI
+
+        contentResolver = context.contentResolver
 
         contentResolver.query(
             contactsUri,
@@ -111,6 +54,33 @@ class ContactService : Service() {
             }
         }
         return contact
+    }
+
+    override fun getContactList(context: Context): ArrayList<BriefContact> {
+        val contacts = ArrayList<BriefContact>()
+        val contactsUri = ContactsContract.Contacts.CONTENT_URI
+
+        contentResolver = context.contentResolver
+
+        contentResolver.query(contactsUri, null, null, null, null).use { contactsCursor ->
+            if (contactsCursor != null) {
+                while (contactsCursor.moveToNext()) {
+                    val id = contactsCursor.getString(
+                        contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID)
+                    )
+                    val image = contactsCursor.getString(
+                        contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI)
+                    )
+                    val name = contactsCursor.getString(
+                        contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)
+                    )
+                    val phone = getPhones(id)
+
+                    contacts.add(BriefContact(id, image, name, phone[0]))
+                }
+            }
+        }
+        return contacts
     }
 
     private fun getPhones(id: String): Array<String> {
@@ -208,4 +178,3 @@ class ContactService : Service() {
         return description
     }
 }
-
