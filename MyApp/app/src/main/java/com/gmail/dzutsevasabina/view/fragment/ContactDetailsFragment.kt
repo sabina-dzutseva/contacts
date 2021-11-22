@@ -18,6 +18,8 @@ import com.gmail.dzutsevasabina.databinding.FragmentDetailsBinding
 import com.gmail.dzutsevasabina.model.DetailedContact
 import com.gmail.dzutsevasabina.viewmodel.ContactDetailsViewModel
 
+const val ARG_ID = "ARG_ID"
+
 class ContactDetailsFragment : Fragment(), View.OnClickListener {
 
     private var listener: View.OnClickListener? = null
@@ -53,12 +55,14 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
         if (context is AppCompatActivity) {
             context.supportActionBar?.title = getString(R.string.fragment2_title)
 
-            observer = Observer { setViews(it) }
+            observer = Observer {
+                setViews(it)
+            }
             detailsViewModel = ViewModelProvider(context).get(ContactDetailsViewModel::class.java)
             detailsViewModel.liveData.observe(context, observer)
         }
 
-        val id = arguments?.getString("ARG_ID")
+        val id = arguments?.getString(ARG_ID)
 
         if (id != null && context != null) {
             detailsViewModel.getContactDetail(id, context)
@@ -102,7 +106,7 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
     companion object {
         fun newInstance(id: String) = ContactDetailsFragment().apply {
             arguments = bundleOf(
-                "ARG_ID" to id
+                ARG_ID to id
             )
         }
     }
@@ -111,7 +115,7 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
         if (view is Button) {
             detailsViewModel.handleAlarm(
                 context,
-                arguments?.getString("ARG_ID"),
+                arguments?.getString(ARG_ID),
                 view)
         }
     }

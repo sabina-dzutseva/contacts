@@ -14,7 +14,11 @@ class ContactListViewModel : ViewModel() {
     private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private val contactRepository = ContactRepositoryImpl()
 
-    fun getContactsList(context: Context) {
-        executor.schedule({ liveData.postValue(contactRepository.getContactList(context)) }, 5, TimeUnit.MILLISECONDS)
+    fun getContactsList(context: Context, query: String) {
+        executor.execute {
+            liveData.postValue(contactRepository.getContactList(context, query))
+        }
     }
+
+    fun getContactId(pos: Int): String? = liveData.value?.get(pos)?.id
 }

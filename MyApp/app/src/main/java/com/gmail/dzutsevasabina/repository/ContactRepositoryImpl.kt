@@ -22,7 +22,8 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Contacts._ID + " = " + id,
             null,
             null
-        ).use { contactsCursor ->
+        ).use {
+                contactsCursor ->
             if (contactsCursor != null) {
                 if (contactsCursor.moveToNext()) {
 
@@ -56,13 +57,14 @@ class ContactRepositoryImpl : ContactRepository {
         return contact
     }
 
-    override fun getContactList(context: Context): ArrayList<BriefContact> {
+    override fun getContactList(context: Context, query: String): ArrayList<BriefContact> {
         val contacts = ArrayList<BriefContact>()
         val contactsUri = ContactsContract.Contacts.CONTENT_URI
 
         contentResolver = context.contentResolver
 
-        contentResolver.query(contactsUri, null, null, null, null).use { contactsCursor ->
+        contentResolver.query(contactsUri, null, null, null, null).use {
+                contactsCursor ->
             if (contactsCursor != null) {
                 while (contactsCursor.moveToNext()) {
                     val id = contactsCursor.getString(
@@ -76,7 +78,9 @@ class ContactRepositoryImpl : ContactRepository {
                     )
                     val phone = getPhones(id)
 
-                    contacts.add(BriefContact(id, image, name, phone[0]))
+                    if (name.contains(query)) {
+                        contacts.add(BriefContact(id, image, name, phone[0]))
+                    }
                 }
             }
         }
@@ -93,7 +97,8 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Data.CONTACT_ID + " = " + id,
             null,
             null
-        ).use { phoneCursor ->
+        ).use {
+                phoneCursor ->
             if (phoneCursor != null) {
                 if (phoneCursor.moveToNext()) {
                     phone1 = phoneCursor.getString(
@@ -121,7 +126,8 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Data.CONTACT_ID + " = " + id,
             null,
             null
-        ).use { emailCursor ->
+        ).use {
+                emailCursor ->
             if (emailCursor != null) {
                 if (emailCursor.moveToNext()) {
                     email1 = emailCursor.getString(
@@ -148,7 +154,8 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
             arrayOf(id, ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE),
             null
-        ).use { birthdayCursor ->
+        ).use {
+                birthdayCursor ->
             if (birthdayCursor != null) {
                 if (birthdayCursor.moveToNext()) {
                     birthday = birthdayCursor.getString(0).drop(2).replace('-', '.')
@@ -168,7 +175,8 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
             arrayOf(id, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE),
             null
-        ).use { noteCursor ->
+        ).use {
+                noteCursor ->
             if (noteCursor != null) {
                 if (noteCursor.moveToNext()) {
                     description = noteCursor.getString(0)
