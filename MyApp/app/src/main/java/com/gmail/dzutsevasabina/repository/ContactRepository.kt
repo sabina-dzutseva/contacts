@@ -6,5 +6,5 @@ import com.gmail.dzutsevasabina.model.DetailedContact
 
 interface ContactRepository {
     fun getContact(id: String, context: Context): DetailedContact?
-    fun getContactList(context: Context): ArrayList<BriefContact>
+    fun getContactList(context: Context, query: String): List<BriefContact>
 }

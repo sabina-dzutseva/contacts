@@ -1,61 +1,69 @@
 package com.gmail.dzutsevasabina.view.fragment
 
-import android.content.Context
-import android.net.Uri
+import android.content.res.Resources
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.databinding.FragmentListBinding
-import com.gmail.dzutsevasabina.view.interfaces.ContactClickListener
-import com.gmail.dzutsevasabina.model.BriefContact
+import com.gmail.dzutsevasabina.view.*
 import com.gmail.dzutsevasabina.viewmodel.ContactListViewModel
 
-class ContactListFragment : Fragment() {
-    private var listener: ContactClickListener? = null
-
+class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
     private var _listBinding: FragmentListBinding? = null
     private val listBinding get() = _listBinding!!
 
     private lateinit var listViewModel: ContactListViewModel
-    private lateinit var observer: Observer<ArrayList<BriefContact>>
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is ContactClickListener) {
-            listener = context
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
+
         val context = context
         _listBinding = FragmentListBinding.inflate(inflater, container, false)
 
         if (context is AppCompatActivity) {
             context.supportActionBar?.title = getString(R.string.fragment1_title)
 
-            observer = Observer { setViews(it) }
             listViewModel = ViewModelProvider(context).get(ContactListViewModel::class.java)
-            listViewModel.liveData.observe(context, observer)
+
+            val adapter by lazy {
+                ContactAdapter { pos: Int ->
+                    val id = listViewModel.getContactId(pos)
+                    if (id != null) {
+                        context.supportFragmentManager.setFragmentResult(
+                            CONTACT_ID_REQUEST_KEY,
+                            bundleOf(ID_KEY to id)
+                        )
+                    }
+                }
+            }
+
+            with(listBinding.recycler) {
+                layoutManager = LinearLayoutManager(context)
+                this.adapter = adapter
+                val dp = 20
+                val offset: Int = dp.dpToPx
+                addItemDecoration(OffsetDecorator(offset))
+            }
+
+            listViewModel.liveData.observe(context) {
+                if (it != null) {
+                    adapter.submitList(it)
+                }
+            }
         }
 
         if (context != null) {
-            listViewModel.getContactsList(context)
+            listViewModel.getContactsList(context, "")
         }
 
         return listBinding.root
@@ -64,24 +72,23 @@ class ContactListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _listBinding = null
-        listViewModel.liveData.removeObserver(observer)
     }
 
-    private fun setViews(contacts: ArrayList<BriefContact>) {
-        val view: View = listBinding.root
-        with(listBinding) {
-            view.post {
-                background.setBackgroundColor(
-                    ContextCompat.getColor(
-                        view.context,
-                        R.color.white
-                    )
-                )
-                contactImage.setImageURI(Uri.parse(contacts[0].image))
-                contactName.text = contacts[0].name
-                contactPhoneNumber.text = contacts[0].phoneNumber1
-                view.setOnClickListener { listener?.onClick(view, contacts[0].id) }
-            }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_menu, menu)
+        val menuItem = menu.findItem(R.id.search_contact)
+        val searchView = menuItem.actionView as? SearchView
+        searchView?.setOnQueryTextListener(this)
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean = false
+
+    override fun onQueryTextChange(query: String?): Boolean {
+        val context = context
+        if (context != null && query != null) {
+            listViewModel.getContactsList(context, query)
         }
+
+        return true
     }
 }

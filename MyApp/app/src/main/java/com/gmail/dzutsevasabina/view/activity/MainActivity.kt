@@ -3,7 +3,6 @@ package com.gmail.dzutsevasabina.view.activity
 import android.content.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import androidx.core.content.ContextCompat
 import com.gmail.dzutsevasabina.databinding.ActivityMainBinding
 import android.Manifest
@@ -14,11 +13,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.gmail.dzutsevasabina.viewmodel.BirthdayAlertReceiver
 import com.gmail.dzutsevasabina.R
-import com.gmail.dzutsevasabina.view.interfaces.ContactClickListener
+import com.gmail.dzutsevasabina.view.CONTACT_DETAIL_ID
+import com.gmail.dzutsevasabina.view.CONTACT_ID_REQUEST_KEY
+import com.gmail.dzutsevasabina.view.FRAGMENT_ID
+import com.gmail.dzutsevasabina.view.ID_KEY
 import com.gmail.dzutsevasabina.view.fragment.ContactDetailsFragment
 import com.gmail.dzutsevasabina.view.fragment.ContactListFragment
 
-class MainActivity : AppCompatActivity(), ContactClickListener {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var broadcastReceiver: BirthdayAlertReceiver
@@ -70,30 +72,37 @@ class MainActivity : AppCompatActivity(), ContactClickListener {
     }
 
     private fun addListFragment() {
-        val fragment1 = ContactListFragment()
+        val fragmentList = ContactListFragment()
+
+        supportFragmentManager.setFragmentResultListener(CONTACT_ID_REQUEST_KEY, this) { requestKey, bundle ->
+            val id = bundle.getString(ID_KEY)
+
+            if (id != null) {
+                addDetailsFragment(id.toString())
+            }
+        }
         val transaction = supportFragmentManager.beginTransaction()
         transaction
-            .add(binding.fragmentsContainer.id, fragment1)
+            .add(binding.fragmentsContainer.id, fragmentList)
             .commit()
     }
 
     private fun addDetailsFragment(id: String) {
-        val fragment2 = ContactDetailsFragment.newInstance(id)
+        val fragmentDetails = ContactDetailsFragment.newInstance(id)
         val transaction = supportFragmentManager.beginTransaction()
         transaction
-            .replace(binding.fragmentsContainer.id, fragment2)
+            .replace(binding.fragmentsContainer.id, fragmentDetails)
             .addToBackStack(null)
             .commit()
     }
 
-    override fun onClick(view: View?, id: String) {
-        addDetailsFragment(id)
-    }
-
     private fun addFragment() {
         if (isCreated) {
-            if (intent.getIntExtra("FRAGMENT_ID", 0) == R.layout.fragment_details) {
-                intent.getStringExtra("CONTACT_DETAIL_ID")?.let { addDetailsFragment(it) }
+            if (intent.getIntExtra(FRAGMENT_ID, 0) == R.layout.fragment_details) {
+                val extra = intent.getStringExtra(CONTACT_DETAIL_ID)
+                if (extra != null) {
+                    addDetailsFragment(extra)
+                }
             } else {
                 if (isCreated) {
                     addListFragment()

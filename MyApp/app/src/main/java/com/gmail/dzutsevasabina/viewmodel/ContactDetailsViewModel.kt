@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.repository.ContactRepositoryImpl
 import com.gmail.dzutsevasabina.model.DetailedContact
+import com.gmail.dzutsevasabina.view.CONTACT_ID
+import com.gmail.dzutsevasabina.view.MESSAGE
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
@@ -24,7 +26,7 @@ class ContactDetailsViewModel : ViewModel() {
 
 
     fun getContactDetail(id: String, context: Context) {
-        executor.schedule({ liveData.postValue(contactRepository.getContact(id, context))}, 2, TimeUnit.MILLISECONDS)
+        executor.execute { liveData.postValue(contactRepository.getContact(id, context)) }
     }
 
     fun handleAlarm(context: Context?, id: String?, button: Button) {
@@ -33,10 +35,10 @@ class ContactDetailsViewModel : ViewModel() {
         val alarmManager: AlarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(context, BirthdayAlertReceiver::class.java)
-        intent.putExtra("CONTACT_ID", id)
+        intent.putExtra(CONTACT_ID, id)
 
         val message = String.format(context.resources.getString(R.string.notification_text, contact.name))
-        intent.putExtra("MESSAGE", message)
+        intent.putExtra(MESSAGE, message)
 
         val pendingIntent =
             PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)

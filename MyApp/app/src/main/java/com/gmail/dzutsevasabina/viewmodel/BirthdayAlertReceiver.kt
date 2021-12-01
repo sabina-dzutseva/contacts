@@ -11,6 +11,10 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.gmail.dzutsevasabina.R
+import com.gmail.dzutsevasabina.view.CONTACT_DETAIL_ID
+import com.gmail.dzutsevasabina.view.CONTACT_ID
+import com.gmail.dzutsevasabina.view.FRAGMENT_ID
+import com.gmail.dzutsevasabina.view.MESSAGE
 import com.gmail.dzutsevasabina.view.activity.MainActivity
 import java.util.*
 
@@ -48,9 +52,9 @@ class BirthdayAlertReceiver : BroadcastReceiver() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
-        val id = intent?.getIntExtra("CONTACT_ID", -1)
-        activityIntent.putExtra("CONTACT_DETAIL_ID", id)
-        activityIntent.putExtra("FRAGMENT_ID", R.layout.fragment_details)
+        val id = intent?.getIntExtra(CONTACT_ID, -1)
+        activityIntent.putExtra(CONTACT_DETAIL_ID, id)
+        activityIntent.putExtra(FRAGMENT_ID, R.layout.fragment_details)
 
         val pendingIntent: PendingIntent =
             PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -58,7 +62,7 @@ class BirthdayAlertReceiver : BroadcastReceiver() {
         val builder = NotificationCompat.Builder(context, context.getString(R.string.channel_id))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(context.getString(R.string.notification_title))
-            .setContentText(intent?.getStringExtra("MESSAGE"))
+            .setContentText(intent?.getStringExtra(MESSAGE))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
