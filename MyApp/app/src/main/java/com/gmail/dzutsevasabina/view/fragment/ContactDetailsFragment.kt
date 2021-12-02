@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -29,6 +32,11 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
 
     private lateinit var detailsViewModel: ContactDetailsViewModel
     private lateinit var observer: Observer<DetailedContact>
+
+    private var progressBar: ProgressBar? = null
+
+    private var checkBoxTitle: TextView? = null
+    private var checkBox: CheckBox? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -59,7 +67,19 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
                 setViews(it)
             }
             detailsViewModel = ViewModelProvider(context).get(ContactDetailsViewModel::class.java)
-            detailsViewModel.liveData.observe(context, observer)
+            detailsViewModel.details.observe(context, observer)
+
+            progressBar = detailsBinding.progressBarDetails
+            checkBoxTitle = detailsBinding.birthdayNotificationTitle
+            checkBox = detailsBinding.birthdayNotificationButton
+
+            detailsViewModel.loadStatus.observe(context) {
+                progressBar?.visibility = if (it) View.VISIBLE else View.GONE
+
+                val checkBoxVisibility = if (it) View.GONE else View.VISIBLE
+                checkBoxTitle?.visibility = checkBoxVisibility
+                checkBox?.visibility = checkBoxVisibility
+            }
         }
 
         val id = arguments?.getString(ARG_ID)
@@ -68,12 +88,16 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
             detailsViewModel.getContactDetail(id, context)
         }
 
+
         return detailsBinding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        detailsViewModel.liveData.removeObserver(observer)
+        detailsViewModel.details.removeObserver(observer)
+        progressBar = null
+        checkBoxTitle = null
+        checkBox = null
     }
 
     private fun setViews(contact: DetailedContact) {

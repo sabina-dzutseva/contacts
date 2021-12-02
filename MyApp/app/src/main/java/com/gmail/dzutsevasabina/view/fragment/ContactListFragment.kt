@@ -1,8 +1,8 @@
 package com.gmail.dzutsevasabina.view.fragment
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.*
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
@@ -19,6 +19,8 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
     private val listBinding get() = _listBinding!!
 
     private lateinit var listViewModel: ContactListViewModel
+
+    private var progressBar: ProgressBar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,15 +52,19 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
             with(listBinding.recycler) {
                 layoutManager = LinearLayoutManager(context)
                 this.adapter = adapter
-                val dp = 20
-                val offset: Int = dp.dpToPx
-                addItemDecoration(OffsetDecorator(offset))
+                addItemDecoration(OffsetDecorator(20.dpToPx))
             }
 
-            listViewModel.liveData.observe(context) {
+            listViewModel.list.observe(context) {
                 if (it != null) {
                     adapter.submitList(it)
                 }
+            }
+
+            progressBar = listBinding.progressBarList
+
+            listViewModel.loadStatus.observe(context) {
+                progressBar?.visibility = if (it) View.VISIBLE else View.GONE
             }
         }
 
@@ -72,6 +78,7 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _listBinding = null
+        progressBar = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

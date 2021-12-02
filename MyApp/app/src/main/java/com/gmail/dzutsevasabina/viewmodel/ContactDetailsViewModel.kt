@@ -13,24 +13,42 @@ import com.gmail.dzutsevasabina.repository.ContactRepositoryImpl
 import com.gmail.dzutsevasabina.model.DetailedContact
 import com.gmail.dzutsevasabina.view.CONTACT_ID
 import com.gmail.dzutsevasabina.view.MESSAGE
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 class ContactDetailsViewModel : ViewModel() {
-    val liveData = MutableLiveData<DetailedContact>()
+    val details = MutableLiveData<DetailedContact>()
+    val loadStatus = MutableLiveData<Boolean>()
     private val contactRepository = ContactRepositoryImpl()
-    private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-
+    private val disposable: CompositeDisposable = CompositeDisposable()
 
     fun getContactDetail(id: String, context: Context) {
-        executor.execute { liveData.postValue(contactRepository.getContact(id, context)) }
+        disposable
+            .add(Single.fromCallable {
+                Thread.sleep(5000)
+                details.postValue(contactRepository.getContact(id, context))
+            }
+             .subscribeOn(Schedulers.io())
+             .observeOn(AndroidSchedulers.mainThread())
+             .doOnSubscribe {
+                 loadStatus.postValue(true)
+             }
+             .doOnTerminate {
+                 loadStatus.postValue(false)
+             }
+             .subscribe())
     }
 
     fun handleAlarm(context: Context?, id: String?, button: Button) {
-        val contact = liveData.value ?: return
+        val contact = details.value ?: return
 
         val alarmManager: AlarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 

@@ -40,8 +40,8 @@
         android:id="@+id/birthday"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:textSize="26sp"
         app:layout_constraintLeft_toRightOf="@id/birthdayTitle"
         app:layout_constraintRight_toRightOf="@id/contactName"
@@ -103,21 +103,32 @@
         android:id="@+id/birthdayNotificationTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
         android:text="@string/notify_about_birthday"
         android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/contactDescription"
-        app:layout_constraintLeft_toLeftOf="@id/contactDescription"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="50dp"
-        android:layout_marginTop="50dp"/>
+        app:layout_constraintLeft_toLeftOf="@id/contactDescription"
+        app:layout_constraintTop_toBottomOf="@id/contactDescription" />
+
     <CheckBox
         android:id="@+id/birthdayNotificationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/contactDescription"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/birthdayNotificationTitle"
         app:layout_constraintRight_toRightOf="@id/contactDescription"
+        app:layout_constraintTop_toBottomOf="@id/contactDescription" />
+
+    <ProgressBar
+        android:id="@+id/progressBarDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="50dp"
-        android:layout_marginTop="50dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

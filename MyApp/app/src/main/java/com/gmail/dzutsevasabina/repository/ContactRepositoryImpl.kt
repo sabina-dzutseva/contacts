@@ -50,7 +50,6 @@ class ContactRepositoryImpl : ContactRepository {
                         birthday,
                         description
                     )
-
                 }
             }
         }
