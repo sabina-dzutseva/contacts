@@ -1,5 +1,6 @@
 package com.gmail.dzutsevasabina.view.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.ProgressBar
@@ -7,12 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.databinding.FragmentListBinding
+import com.gmail.dzutsevasabina.di.interfaces.IApp
 import com.gmail.dzutsevasabina.view.*
 import com.gmail.dzutsevasabina.viewmodel.ContactListViewModel
+import javax.inject.Inject
 
 const val OFFSET = 20
 
@@ -20,9 +22,19 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
     private var _listBinding: FragmentListBinding? = null
     private val listBinding get() = _listBinding!!
 
-    private lateinit var listViewModel: ContactListViewModel
+    var listViewModel: ContactListViewModel? = null
+        @Inject set
 
     private var progressBar: ProgressBar? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        val appComp = (activity?.application as IApp).getAppComponent(context)
+
+        val listComponent = appComp?.plusContactsListComponent()
+        listComponent?.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,11 +49,9 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
         if (context is AppCompatActivity) {
             context.supportActionBar?.title = getString(R.string.fragment1_title)
 
-            listViewModel = ViewModelProvider(context).get(ContactListViewModel::class.java)
-
             val adapter by lazy {
                 ContactAdapter { pos: Int ->
-                    val id = listViewModel.getContactId(pos)
+                    val id = listViewModel?.getContactId(pos)
                     if (id != null) {
                         context.supportFragmentManager.setFragmentResult(
                             CONTACT_ID_REQUEST_KEY,
@@ -57,7 +67,7 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
                 addItemDecoration(OffsetDecorator(OFFSET.dpToPx))
             }
 
-            listViewModel.getList().observe(viewLifecycleOwner) {
+            listViewModel?.getList()?.observe(viewLifecycleOwner) {
                 if (it != null) {
                     adapter.submitList(it)
                 }
@@ -65,13 +75,14 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
 
             progressBar = listBinding.progressBarList
 
-            listViewModel.getLoadStatus().observe(viewLifecycleOwner) {
+
+            listViewModel?.getLoadStatus()?.observe(viewLifecycleOwner) {
                 progressBar?.visibility = if (it) View.VISIBLE else View.GONE
             }
         }
 
         if (context != null) {
-            listViewModel.getContactsList(context, "")
+            listViewModel?.getContactsList(context, "")
         }
 
         return listBinding.root
@@ -95,7 +106,7 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onQueryTextChange(query: String?): Boolean {
         val context = context
         if (context != null && query != null) {
-            listViewModel.getContactsList(context, query)
+            listViewModel?.getContactsList(context, query)
         }
 
         return true

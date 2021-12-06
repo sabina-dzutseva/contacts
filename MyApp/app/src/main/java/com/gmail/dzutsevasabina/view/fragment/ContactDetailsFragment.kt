@@ -17,8 +17,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.databinding.FragmentDetailsBinding
+import com.gmail.dzutsevasabina.di.interfaces.IApp
 import com.gmail.dzutsevasabina.model.DetailedContact
 import com.gmail.dzutsevasabina.viewmodel.ContactDetailsViewModel
+import javax.inject.Inject
 
 const val ARG_ID = "ARG_ID"
 
@@ -29,7 +31,8 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
     private var _detailsBinding: FragmentDetailsBinding? = null
     private val detailsBinding get() = _detailsBinding!!
 
-    private lateinit var detailsViewModel: ContactDetailsViewModel
+    var detailsViewModel: ContactDetailsViewModel? = null
+        @Inject set
 
     private var progressBar: ProgressBar? = null
 
@@ -38,6 +41,11 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+        val appComp = (activity?.application as IApp).getAppComponent(context)
+
+        val detailsComponent = appComp?.plusContactDetailsComponent()
+        detailsComponent?.inject(this)
 
         if (context is View.OnClickListener) {
             listener = context
@@ -62,7 +70,7 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
             context.supportActionBar?.title = getString(R.string.fragment2_title)
 
             detailsViewModel = ViewModelProvider(context).get(ContactDetailsViewModel::class.java)
-            detailsViewModel.getDetails().observe(viewLifecycleOwner) {
+            detailsViewModel?.getDetails()?.observe(viewLifecycleOwner) {
                 setViews(it)
             }
 
@@ -70,7 +78,7 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
             checkBoxTitle = detailsBinding.birthdayNotificationTitle
             checkBox = detailsBinding.birthdayNotificationButton
 
-            detailsViewModel.getLoadStatus().observe(viewLifecycleOwner) {
+            detailsViewModel?.getLoadStatus()?.observe(viewLifecycleOwner) {
                 progressBar?.visibility = if (it) View.VISIBLE else View.GONE
 
                 val checkBoxVisibility = if (it) View.GONE else View.VISIBLE
@@ -82,7 +90,7 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
         val id = arguments?.getString(ARG_ID)
 
         if (id != null && context != null) {
-            detailsViewModel.getContactDetail(id, context)
+            detailsViewModel?.getContactDetail(id, context)
         }
 
 
@@ -133,7 +141,7 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         if (view is Button) {
-            detailsViewModel.handleAlarm(
+            detailsViewModel?.handleAlarm(
                 context,
                 arguments?.getString(ARG_ID),
                 view)
