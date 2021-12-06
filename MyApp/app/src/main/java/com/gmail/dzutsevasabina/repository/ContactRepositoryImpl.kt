@@ -5,12 +5,22 @@ import android.content.Context
 import android.provider.ContactsContract
 import com.gmail.dzutsevasabina.model.BriefContact
 import com.gmail.dzutsevasabina.model.DetailedContact
+import io.reactivex.rxjava3.core.Single
 
 class ContactRepositoryImpl : ContactRepository {
     private lateinit var contentResolver: ContentResolver
 
-    override fun getContact(id: String, context: Context): DetailedContact? {
-        var contact: DetailedContact? = null
+    override fun getContact(id: String, context: Context): Single<DetailedContact> {
+        return Single.fromCallable { getDetails(id, context) }
+    }
+
+    override fun getContactList(context: Context, query: String): Single<List<BriefContact>> {
+        return Single.fromCallable { getList(context, query) }
+    }
+
+    private fun getDetails(id: String, context: Context): DetailedContact {
+
+        var contact = DetailedContact(id, "", "", "", "", "", "", "", "")
 
         val contactsUri = ContactsContract.Contacts.CONTENT_URI
 
@@ -22,8 +32,7 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Contacts._ID + " = " + id,
             null,
             null
-        ).use {
-                contactsCursor ->
+        ).use { contactsCursor ->
             if (contactsCursor != null) {
                 if (contactsCursor.moveToNext()) {
 
@@ -56,14 +65,13 @@ class ContactRepositoryImpl : ContactRepository {
         return contact
     }
 
-    override fun getContactList(context: Context, query: String): ArrayList<BriefContact> {
+    private fun getList(context: Context, query: String): List<BriefContact> {
         val contacts = ArrayList<BriefContact>()
         val contactsUri = ContactsContract.Contacts.CONTENT_URI
 
         contentResolver = context.contentResolver
 
-        contentResolver.query(contactsUri, null, null, null, null).use {
-                contactsCursor ->
+        contentResolver.query(contactsUri, null, null, null, null).use { contactsCursor ->
             if (contactsCursor != null) {
                 while (contactsCursor.moveToNext()) {
                     val id = contactsCursor.getString(
@@ -96,8 +104,7 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Data.CONTACT_ID + " = " + id,
             null,
             null
-        ).use {
-                phoneCursor ->
+        ).use { phoneCursor ->
             if (phoneCursor != null) {
                 if (phoneCursor.moveToNext()) {
                     phone1 = phoneCursor.getString(
@@ -125,8 +132,7 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Data.CONTACT_ID + " = " + id,
             null,
             null
-        ).use {
-                emailCursor ->
+        ).use { emailCursor ->
             if (emailCursor != null) {
                 if (emailCursor.moveToNext()) {
                     email1 = emailCursor.getString(
@@ -153,8 +159,7 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
             arrayOf(id, ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE),
             null
-        ).use {
-                birthdayCursor ->
+        ).use { birthdayCursor ->
             if (birthdayCursor != null) {
                 if (birthdayCursor.moveToNext()) {
                     birthday = birthdayCursor.getString(0).drop(2).replace('-', '.')
@@ -174,8 +179,7 @@ class ContactRepositoryImpl : ContactRepository {
             ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
             arrayOf(id, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE),
             null
-        ).use {
-                noteCursor ->
+        ).use { noteCursor ->
             if (noteCursor != null) {
                 if (noteCursor.moveToNext()) {
                     description = noteCursor.getString(0)

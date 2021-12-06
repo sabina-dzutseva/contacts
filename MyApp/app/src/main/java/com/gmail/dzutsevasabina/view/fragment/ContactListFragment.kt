@@ -14,6 +14,8 @@ import com.gmail.dzutsevasabina.databinding.FragmentListBinding
 import com.gmail.dzutsevasabina.view.*
 import com.gmail.dzutsevasabina.viewmodel.ContactListViewModel
 
+const val OFFSET = 20
+
 class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
     private var _listBinding: FragmentListBinding? = null
     private val listBinding get() = _listBinding!!
@@ -52,10 +54,10 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
             with(listBinding.recycler) {
                 layoutManager = LinearLayoutManager(context)
                 this.adapter = adapter
-                addItemDecoration(OffsetDecorator(20.dpToPx))
+                addItemDecoration(OffsetDecorator(OFFSET.dpToPx))
             }
 
-            listViewModel.list.observe(context) {
+            listViewModel.getList().observe(viewLifecycleOwner) {
                 if (it != null) {
                     adapter.submitList(it)
                 }
@@ -63,7 +65,7 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
 
             progressBar = listBinding.progressBarList
 
-            listViewModel.loadStatus.observe(context) {
+            listViewModel.getLoadStatus().observe(viewLifecycleOwner) {
                 progressBar?.visibility = if (it) View.VISIBLE else View.GONE
             }
         }

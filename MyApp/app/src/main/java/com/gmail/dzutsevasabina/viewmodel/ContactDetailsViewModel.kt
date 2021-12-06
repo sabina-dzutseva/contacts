@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Button
 import android.widget.CheckBox
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.gmail.dzutsevasabina.R
@@ -14,28 +15,28 @@ import com.gmail.dzutsevasabina.model.DetailedContact
 import com.gmail.dzutsevasabina.view.CONTACT_ID
 import com.gmail.dzutsevasabina.view.MESSAGE
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 
 class ContactDetailsViewModel : ViewModel() {
-    val details = MutableLiveData<DetailedContact>()
-    val loadStatus = MutableLiveData<Boolean>()
+    private val details = MutableLiveData<DetailedContact>()
+    private val loadStatus = MutableLiveData<Boolean>()
     private val contactRepository = ContactRepositoryImpl()
     private val disposable: CompositeDisposable = CompositeDisposable()
 
+    fun getDetails(): LiveData<DetailedContact> {
+        return details
+    }
+
+    fun getLoadStatus(): LiveData<Boolean> {
+        return loadStatus
+    }
+
     fun getContactDetail(id: String, context: Context) {
         disposable
-            .add(Single.fromCallable {
-                Thread.sleep(5000)
-                details.postValue(contactRepository.getContact(id, context))
-            }
+             .add(contactRepository.getContact(id, context)
              .subscribeOn(Schedulers.io())
              .observeOn(AndroidSchedulers.mainThread())
              .doOnSubscribe {
@@ -44,7 +45,10 @@ class ContactDetailsViewModel : ViewModel() {
              .doOnTerminate {
                  loadStatus.postValue(false)
              }
-             .subscribe())
+             .subscribe(
+                 {details.postValue(it)},
+                 {loadStatus.postValue(false)}
+             ))
     }
 
     fun handleAlarm(context: Context?, id: String?, button: Button) {

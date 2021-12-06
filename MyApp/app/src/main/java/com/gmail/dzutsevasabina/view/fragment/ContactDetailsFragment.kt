@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.databinding.FragmentDetailsBinding
@@ -31,7 +30,6 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
     private val detailsBinding get() = _detailsBinding!!
 
     private lateinit var detailsViewModel: ContactDetailsViewModel
-    private lateinit var observer: Observer<DetailedContact>
 
     private var progressBar: ProgressBar? = null
 
@@ -63,17 +61,16 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
         if (context is AppCompatActivity) {
             context.supportActionBar?.title = getString(R.string.fragment2_title)
 
-            observer = Observer {
+            detailsViewModel = ViewModelProvider(context).get(ContactDetailsViewModel::class.java)
+            detailsViewModel.getDetails().observe(viewLifecycleOwner) {
                 setViews(it)
             }
-            detailsViewModel = ViewModelProvider(context).get(ContactDetailsViewModel::class.java)
-            detailsViewModel.details.observe(context, observer)
 
             progressBar = detailsBinding.progressBarDetails
             checkBoxTitle = detailsBinding.birthdayNotificationTitle
             checkBox = detailsBinding.birthdayNotificationButton
 
-            detailsViewModel.loadStatus.observe(context) {
+            detailsViewModel.getLoadStatus().observe(viewLifecycleOwner) {
                 progressBar?.visibility = if (it) View.VISIBLE else View.GONE
 
                 val checkBoxVisibility = if (it) View.GONE else View.VISIBLE
@@ -94,7 +91,6 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        detailsViewModel.details.removeObserver(observer)
         progressBar = null
         checkBoxTitle = null
         checkBox = null
