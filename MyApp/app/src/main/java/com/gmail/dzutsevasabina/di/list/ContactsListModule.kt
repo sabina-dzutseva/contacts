@@ -1,6 +1,7 @@
 package com.gmail.dzutsevasabina.di.list
 
 import android.content.Context
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.gmail.dzutsevasabina.di.scopes.ContactsListScope
