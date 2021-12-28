@@ -73,7 +73,7 @@ class BirthdayAlertReceiver : BroadcastReceiver() {
     private fun nextBirthday(): Calendar {
         val calendar: Calendar = GregorianCalendar.getInstance()
 
-        if (calendar.get(Calendar.MONTH) == Calendar.FEBRUARY && calendar.get(Calendar.DAY_OF_MONTH) == 29) {
+        if (calendar.get(Calendar.MONTH) == 2 && calendar.get(Calendar.DAY_OF_MONTH) == 29) {
             calendar.add(Calendar.YEAR, 4)
         } else {
             calendar.add(Calendar.YEAR, 1)
