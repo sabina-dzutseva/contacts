@@ -6,15 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.databinding.FragmentDetailsBinding
@@ -39,6 +35,9 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
 
     private var checkBoxTitle: TextView? = null
     private var checkBox: CheckBox? = null
+
+    private var locationTitle: TextView? = null
+    private var locationButton: ImageButton? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -80,13 +79,18 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
             progressBar = detailsBinding.progressBarDetails
             checkBoxTitle = detailsBinding.birthdayNotificationTitle
             checkBox = detailsBinding.birthdayNotificationButton
+            locationTitle = detailsBinding.locationTitle
+            locationButton = detailsBinding.locationButton
 
             detailsViewModel?.getLoadStatus()?.observe(viewLifecycleOwner) {
                 progressBar?.visibility = if (it) View.VISIBLE else View.GONE
 
-                val checkBoxVisibility = if (it) View.GONE else View.VISIBLE
-                checkBoxTitle?.visibility = checkBoxVisibility
-                checkBox?.visibility = checkBoxVisibility
+                val nonInfoViewsVisibility = if (it) View.GONE else View.VISIBLE
+                checkBoxTitle?.visibility = nonInfoViewsVisibility
+                checkBox?.visibility = nonInfoViewsVisibility
+                locationTitle?.visibility = nonInfoViewsVisibility
+                locationButton?.visibility = nonInfoViewsVisibility
+
             }
         }
 
@@ -105,6 +109,8 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
         progressBar = null
         checkBoxTitle = null
         checkBox = null
+        locationTitle = null
+        locationButton = null
     }
 
     private fun setViews(contact: DetailedContact) {

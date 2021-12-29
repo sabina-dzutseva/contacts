@@ -100,6 +100,18 @@
 
 
     <TextView
+        android:id="@+id/locationTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
+        android:text="@string/location_title"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="@id/contactDescription"
+        app:layout_constraintTop_toBottomOf="@id/contactDescription" />
+
+
+    <TextView
         android:id="@+id/birthdayNotificationTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -109,7 +121,7 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@id/contactDescription"
-        app:layout_constraintTop_toBottomOf="@id/contactDescription" />
+        app:layout_constraintTop_toBottomOf="@id/locationTitle" />
 
     <CheckBox
         android:id="@+id/birthdayNotificationButton"
@@ -120,7 +132,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/birthdayNotificationTitle"
         app:layout_constraintRight_toRightOf="@id/contactDescription"
-        app:layout_constraintTop_toBottomOf="@id/contactDescription" />
+        app:layout_constraintTop_toBottomOf="@id/locationTitle" />
+
+    <ImageButton
+        android:id="@+id/locationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_pin_drop_24"
+        app:layout_constraintLeft_toLeftOf="@id/birthdayNotificationButton"
+        app:layout_constraintTop_toTopOf="@id/locationTitle" />
 
     <ProgressBar
         android:id="@+id/progressBarDetails"

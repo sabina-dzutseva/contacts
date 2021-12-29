@@ -5,17 +5,17 @@ import androidx.arch.core.executor.TaskExecutor
 import com.gmail.dzutsevasabina.entity.Contact
 import com.gmail.dzutsevasabina.interactor.ContactModel
 import com.gmail.dzutsevasabina.viewmodel.AlarmHandler
-import io.kotest.core.spec.style.ShouldSpec
-import io.kotest.matchers.shouldBe
-import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import com.gmail.dzutsevasabina.viewmodel.AlarmServiceImpl
 import com.gmail.dzutsevasabina.viewmodel.ContactDetailsViewModel
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.kotest.core.listeners.TestListener
 import io.kotest.core.spec.Spec
+import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.shouldBe
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import io.reactivex.rxjava3.schedulers.Schedulers
+import org.junit.runner.RunWith
 import org.mockito.*
 import org.mockito.Mockito.*
 
@@ -84,6 +84,7 @@ class ContactDetailsViewModelIT : ShouldSpec() {
             }
         }
     }
+
 
     private fun mockContactWithData(name: String, birthday: String) {
         mockContact = Contact("0", "", name, "", "", "", "", birthday, "")
