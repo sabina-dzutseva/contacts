@@ -73,7 +73,6 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
         if (context is AppCompatActivity) {
             context.supportActionBar?.title = getString(R.string.fragment2_title)
 
-            detailsViewModel = ViewModelProvider(context).get(ContactDetailsViewModel::class.java)
             detailsViewModel?.getDetails()?.observe(context) {
                 setViews(it)
             }
@@ -144,10 +143,10 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        if (view is Button) {
+        if (view is CheckBox) {
             detailsViewModel?.handleAlarm(
                 arguments?.getString(ARG_ID),
-                view)
+                view.isChecked)
         }
     }
 }

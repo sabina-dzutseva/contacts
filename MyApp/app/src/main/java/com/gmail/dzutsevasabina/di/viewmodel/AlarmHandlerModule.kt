@@ -1,14 +1,14 @@
-package com.gmail.dzutsevasabina.di.viewmodel.details
+package com.gmail.dzutsevasabina.di.viewmodel
 
-import android.content.Context
 import com.gmail.dzutsevasabina.viewmodel.AlarmHandler
+import com.gmail.dzutsevasabina.viewmodel.AlarmServiceImpl
 import dagger.Module
 import dagger.Provides
 
 @Module
 class AlarmHandlerModule {
     @Provides
-    fun provideAlarmHandler(context: Context): AlarmHandler {
-        return AlarmHandler(context)
+    fun provideAlarmHandler(alarmServiceImpl: AlarmServiceImpl): AlarmHandler {
+        return AlarmHandler(alarmServiceImpl)
     }
 }
