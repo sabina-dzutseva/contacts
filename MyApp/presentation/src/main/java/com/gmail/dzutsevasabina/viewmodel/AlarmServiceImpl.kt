@@ -13,19 +13,17 @@ import javax.inject.Inject
 class AlarmServiceImpl @Inject constructor (private val context: Context) : AlarmService {
     private val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    override fun setAlarm(time: Long, id: String?, name: String) {
+    override fun setAlarm(time: Long, id: Int, name: String) {
         alarmManager.set(AlarmManager.RTC, time, createIntent(id, name))
     }
 
-    override fun cancelAlarm(id: String?, name: String) {
+    override fun cancelAlarm(id: Int, name: String) {
         alarmManager.cancel(createIntent(id, name))
     }
 
-    private fun createIntent(id: String?, name: String): PendingIntent {
+    private fun createIntent(id: Int, name: String): PendingIntent {
         val intent = Intent(context, BirthdayAlertReceiver::class.java)
-        if (id != null) {
-            intent.putExtra(CONTACT_ID, Integer.parseInt(id))
-        }
+        intent.putExtra(CONTACT_ID, id)
 
         val message = String.format(context.resources.getString(R.string.notification_text, name))
         intent.putExtra(MESSAGE, message)

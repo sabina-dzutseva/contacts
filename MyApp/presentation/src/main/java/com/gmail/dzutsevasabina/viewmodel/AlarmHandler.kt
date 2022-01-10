@@ -5,7 +5,7 @@ import com.gmail.dzutsevasabina.model.DetailedContact
 import java.util.*
 
 class AlarmHandler(private val alarmServiceImpl: AlarmServiceImpl) {
-    fun handleAlarm(contact: DetailedContact, id: String?, isChecked: Boolean, currentDate: Calendar) {
+    fun handleAlarm(contact: DetailedContact, id: Int, isChecked: Boolean, currentDate: Calendar) {
         if (isChecked) {
             contact.sendBirthdayNotifications = true
             val notifyTime = NextBirthdayModel().getNextBirthdayDate(contact.birthday, currentDate)

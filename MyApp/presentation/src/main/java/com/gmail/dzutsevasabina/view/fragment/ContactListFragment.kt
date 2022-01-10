@@ -3,28 +3,33 @@ package com.gmail.dzutsevasabina.view.fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.databinding.FragmentListBinding
 import com.gmail.dzutsevasabina.di.IApp
 import com.gmail.dzutsevasabina.view.*
 import com.gmail.dzutsevasabina.viewmodel.ContactListViewModel
+import com.gmail.dzutsevasabina.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
-const val OFFSET = 20
+const val OFFSET = 5
 
 class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
     private var _listBinding: FragmentListBinding? = null
     private val listBinding get() = _listBinding!!
 
-    var listViewModel: ContactListViewModel? = null
+    lateinit var viewModelFactory: ViewModelFactory
     @Inject set
+
+    var listViewModel: ContactListViewModel? = null
 
     private var progressBar: ProgressBar? = null
 
@@ -36,8 +41,7 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
         val listComponent = appComp?.plusContactsListComponent()
         listComponent?.inject(this)
 
-        val viewModelComponent = appComp?.plusViewModelComponent()
-        viewModelComponent?.inject(listViewModel)
+        listViewModel = ViewModelProvider(this, viewModelFactory)[ContactListViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -50,15 +54,17 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
         val context = context
         _listBinding = FragmentListBinding.inflate(inflater, container, false)
 
+        listBinding.mapButton.setOnClickListener { onClick(it) }
+
         if (context is AppCompatActivity) {
-            context.supportActionBar?.title = getString(R.string.fragment1_title)
+            context.supportActionBar?.title = getString(R.string.list_fragment_title)
 
             val adapter by lazy {
                 ContactAdapter { pos: Int ->
                     val id = listViewModel?.getContactId(pos)
                     if (id != null) {
                         context.supportFragmentManager.setFragmentResult(
-                            CONTACT_ID_REQUEST_KEY,
+                            DETAILS_CONTACT_ID_REQUEST_KEY,
                             bundleOf(ID_KEY to id)
                         )
                     }
@@ -75,12 +81,14 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
                 if (it != null) {
                     adapter.submitList(it)
                 }
+
+                listBinding.mapButton.isVisible = it.isNotEmpty()
             }
 
             progressBar = listBinding.progressBarList
 
             listViewModel?.getLoadStatus()?.observe(context) {
-                progressBar?.visibility = if (it) View.VISIBLE else View.GONE
+                progressBar?.isVisible = it
             }
         }
 
@@ -113,5 +121,14 @@ class ContactListFragment : Fragment(), SearchView.OnQueryTextListener {
         }
 
         return true
+    }
+
+    private fun onClick(view: View?) {
+        if (view is ImageButton) {
+            activity?.supportFragmentManager?.setFragmentResult(
+                ROUTE_ID_REQUEST_KEY,
+                bundleOf(ID_KEY to id)
+            )
+        }
     }
 }

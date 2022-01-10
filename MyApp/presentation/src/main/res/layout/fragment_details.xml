@@ -1,154 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp">
 
-    <ImageView
-        android:id="@+id/contactImage"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/contactName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="@id/contactImage"
-        app:layout_constraintLeft_toRightOf="@id/contactImage"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/contactImage" />
+        <ImageView
+            android:id="@+id/contactImage"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/contactName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="@id/contactImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/contactImage"
+            app:layout_constraintTop_toTopOf="@id/contactImage" />
+
+        <TextView
+            android:id="@+id/birthdayTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/birthday"
+            android:textSize="26sp"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/contactImage" />
+
+        <TextView
+            android:id="@+id/birthday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:textSize="22sp"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toEndOf="@id/birthdayTitle"
+            app:layout_constraintTop_toBottomOf="@id/contactImage" />
+
+        <TextView
+            android:id="@+id/phoneNumbersTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@string/phone_numbers_title"
+            android:textSize="28sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/birthday" />
+
+        <TextView
+            android:id="@+id/contactPhoneNumber1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/phoneNumbersTitle" />
+
+        <TextView
+            android:id="@+id/contactPhoneNumber2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/contactPhoneNumber1" />
+
+        <TextView
+            android:id="@+id/emailsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/emails_title"
+            android:textSize="28sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/contactPhoneNumber2" />
+
+        <TextView
+            android:id="@+id/contactEmail1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/emailsTitle" />
+
+        <TextView
+            android:id="@+id/contactEmail2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/contactEmail1" />
+
+        <TextView
+            android:id="@+id/descriptionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/description_title"
+            android:textSize="28sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/contactEmail2" />
+
+        <TextView
+            android:id="@+id/contactDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/descriptionTitle" />
+
+        <TextView
+            android:id="@+id/locationTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/location_title"
+            android:textSize="24sp"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toTopOf="@id/birthdayNotificationTitle"
+            app:layout_constraintEnd_toStartOf="@id/locationButton"
+            app:layout_constraintStart_toStartOf="@id/contactImage"
+            app:layout_constraintTop_toBottomOf="@id/contactDescription" />
+
+        <ImageButton
+            android:id="@+id/locationButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="50dp"
+            android:src="@drawable/ic_baseline_pin_drop_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/locationTitle"
+            app:layout_constraintTop_toTopOf="@id/locationTitle" />
 
 
-    <TextView
-        android:id="@+id/birthdayTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textSize="26sp"
-        app:layout_constraintLeft_toLeftOf="@id/contactImage"
-        app:layout_constraintTop_toBottomOf="@id/contactImage" />
+        <TextView
+            android:id="@+id/birthdayNotificationTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
+            android:text="@string/notify_about_birthday"
+            android:textSize="24sp"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/locationTitle"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@id/locationTitle"
+            app:layout_constraintTop_toBottomOf="@id/locationTitle" />
 
-    <TextView
-        android:id="@+id/birthday"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:textSize="26sp"
-        app:layout_constraintLeft_toRightOf="@id/birthdayTitle"
-        app:layout_constraintRight_toRightOf="@id/contactName"
-        app:layout_constraintTop_toBottomOf="@id/contactImage" />
+        <CheckBox
+            android:id="@+id/birthdayNotificationButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/contactName"
+            app:layout_constraintStart_toEndOf="@id/birthdayNotificationTitle"
+            app:layout_constraintTop_toBottomOf="@id/locationTitle" />
 
-    <TextView
-        android:id="@+id/contactPhoneNumber1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textSize="26sp"
-        app:layout_constraintLeft_toLeftOf="@id/contactImage"
-        app:layout_constraintRight_toRightOf="@id/contactName"
-        app:layout_constraintTop_toBottomOf="@id/birthdayTitle" />
+        <ProgressBar
+            android:id="@+id/progressBarDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/contactPhoneNumber2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="26sp"
-        app:layout_constraintLeft_toLeftOf="@id/contactImage"
-        app:layout_constraintRight_toRightOf="@id/contactName"
-        app:layout_constraintTop_toBottomOf="@id/contactPhoneNumber1" />
-
-    <TextView
-        android:id="@+id/contactEmail1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textSize="26sp"
-        app:layout_constraintLeft_toLeftOf="@id/contactImage"
-        app:layout_constraintRight_toRightOf="@id/contactName"
-        app:layout_constraintTop_toBottomOf="@id/contactPhoneNumber2" />
-
-    <TextView
-        android:id="@+id/contactEmail2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textSize="26sp"
-        app:layout_constraintLeft_toLeftOf="@id/contactImage"
-        app:layout_constraintRight_toRightOf="@id/contactName"
-        app:layout_constraintTop_toBottomOf="@id/contactEmail1" />
-
-    <TextView
-        android:id="@+id/contactDescription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:paddingBottom="10dp"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="@id/contactImage"
-        app:layout_constraintRight_toRightOf="@id/contactName"
-        app:layout_constraintTop_toBottomOf="@id/contactEmail2" />
-
-
-    <TextView
-        android:id="@+id/locationTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp"
-        android:text="@string/location_title"
-        android:textSize="20sp"
-        app:layout_constraintLeft_toLeftOf="@id/contactDescription"
-        app:layout_constraintTop_toBottomOf="@id/contactDescription" />
-
-
-    <TextView
-        android:id="@+id/birthdayNotificationTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp"
-        android:text="@string/notify_about_birthday"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/contactDescription"
-        app:layout_constraintTop_toBottomOf="@id/locationTitle" />
-
-    <CheckBox
-        android:id="@+id/birthdayNotificationButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/birthdayNotificationTitle"
-        app:layout_constraintRight_toRightOf="@id/contactDescription"
-        app:layout_constraintTop_toBottomOf="@id/locationTitle" />
-
-    <ImageButton
-        android:id="@+id/locationButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_pin_drop_24"
-        app:layout_constraintLeft_toLeftOf="@id/birthdayNotificationButton"
-        app:layout_constraintTop_toTopOf="@id/locationTitle" />
-
-    <ProgressBar
-        android:id="@+id/progressBarDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

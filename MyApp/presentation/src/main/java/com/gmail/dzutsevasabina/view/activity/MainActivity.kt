@@ -13,12 +13,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.gmail.dzutsevasabina.viewmodel.BirthdayAlertReceiver
 import com.gmail.dzutsevasabina.R
-import com.gmail.dzutsevasabina.view.CONTACT_DETAIL_ID
-import com.gmail.dzutsevasabina.view.CONTACT_ID_REQUEST_KEY
-import com.gmail.dzutsevasabina.view.FRAGMENT_ID
-import com.gmail.dzutsevasabina.view.ID_KEY
+import com.gmail.dzutsevasabina.view.*
 import com.gmail.dzutsevasabina.view.fragment.ContactDetailsFragment
 import com.gmail.dzutsevasabina.view.fragment.ContactListFragment
+import com.gmail.dzutsevasabina.view.fragment.MapFragment
+import com.gmail.dzutsevasabina.view.fragment.RouteFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -74,20 +73,36 @@ class MainActivity : AppCompatActivity() {
     private fun addListFragment() {
         val fragmentList = ContactListFragment()
 
-        supportFragmentManager.setFragmentResultListener(CONTACT_ID_REQUEST_KEY, this) { requestKey, bundle ->
-            val id = bundle.getString(ID_KEY)
-
-            if (id != null) {
-                addDetailsFragment(id.toString())
-            }
+        supportFragmentManager.setFragmentResultListener(
+            DETAILS_CONTACT_ID_REQUEST_KEY,
+            this
+        ) { requestKey, bundle ->
+            val id = bundle.getInt(ID_KEY)
+            addDetailsFragment(id)
         }
+
+        supportFragmentManager.setFragmentResultListener(
+            ROUTE_ID_REQUEST_KEY,
+            this
+        ) { requestKey, bundle ->
+            addRouteFragment()
+        }
+
         val transaction = supportFragmentManager.beginTransaction()
         transaction
             .add(binding.fragmentsContainer.id, fragmentList)
             .commit()
     }
 
-    private fun addDetailsFragment(id: String) {
+    private fun addDetailsFragment(id: Int) {
+        supportFragmentManager.setFragmentResultListener(
+            MAP_CONTACT_ID_REQUEST_KEY,
+            this
+        ) { requestKey, bundle ->
+            val keyId = bundle.getInt(ID_KEY)
+            addMapFragment(keyId)
+        }
+
         val fragmentDetails = ContactDetailsFragment.newInstance(id)
         val transaction = supportFragmentManager.beginTransaction()
         transaction
@@ -96,17 +111,36 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    private fun addMapFragment(id: Int) {
+        val fragmentMap = MapFragment.newInstance(id)
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction
+            .replace(binding.fragmentsContainer.id, fragmentMap)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun addRouteFragment() {
+        val fragmentRoute = RouteFragment()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction
+            .replace(binding.fragmentsContainer.id, fragmentRoute)
+            .addToBackStack(null)
+            .commit()
+    }
+
     private fun addFragment() {
         if (isCreated) {
             if (intent.getIntExtra(FRAGMENT_ID, 0) == R.layout.fragment_details) {
-                val extra = intent.getStringExtra(CONTACT_DETAIL_ID)
-                if (extra != null) {
-                    addDetailsFragment(extra)
-                }
-            } else {
-                if (isCreated) {
-                    addListFragment()
-                }
+                val extra = intent.getIntExtra(CONTACT_DETAIL_ID, -1)
+                addDetailsFragment(extra)
+            } else if (intent.getIntExtra(FRAGMENT_ID, 0) == R.layout.fragment_map) {
+                val extra = intent.getIntExtra(CONTACT_DETAIL_ID, -1)
+                addMapFragment(extra)
+            } /*else if (intent.getIntExtra(FRAGMENT_ID, 0) == R.layout.fragment_route) {
+                addRouteFragment()
+            }*/ else {
+                addListFragment()
             }
         }
     }

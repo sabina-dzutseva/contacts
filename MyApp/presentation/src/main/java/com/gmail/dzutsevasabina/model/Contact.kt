@@ -1,14 +1,14 @@
 package com.gmail.dzutsevasabina.model
 
 data class BriefContact(
-    val id: String,
+    val id: Int,
     val image: String,
     val name: String,
     val phoneNumber1: String,
 )
 
 data class DetailedContact(
-    val id: String,
+    val id: Int,
     val image: String,
     val name: String,
     val phoneNumber1: String,

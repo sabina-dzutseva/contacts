@@ -2,7 +2,6 @@ package com.gmail.dzutsevasabina.di.app
 
 import dagger.Module
 import javax.inject.Singleton
-
 import android.content.Context
 import dagger.Provides
 

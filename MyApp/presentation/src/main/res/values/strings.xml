@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Contacts</string>
-    <string name="fragment1_title">Список контактов</string>
-    <string name="fragment2_title">Детали контакта</string>
+    <string name="list_fragment_title">Список контактов</string>
+    <string name="details_fragment_title">Детали контакта</string>
+    <string name="map_fragment_title">Местоположение контакта</string>
+    <string name="route_fragment_title">Местоположения контактов</string>
     <string name="contact_name">Иванов Иван Иванович</string>
-    <string name="contact_phone1">+7(912)345–67–89</string>
-    <string name="contact_phone2">55–11–22</string>
-    <string name="contact_email1">ivanov@email.com</string>
-    <string name="contact_email2">ivanov2@email.com</string>
-    <string name="contact_description">Хороший человек с работы.</string>
+    <string name="phone_numbers_title">Телефон</string>
+    <string name="emails_title">Почта</string>
+    <string name="description_title">Описание</string>
     <string name="birthday">День рождения: </string>
     <string name="notify_about_birthday">Уведомлять о дне рождения</string>
     <string name="notification_title">День рождения контакта</string>
@@ -20,4 +20,11 @@
     <string name="ok">Ок</string>
     <string name="search_title">Поиск контакта</string>
     <string name="location_title">Местоположение</string>>
+    <string name="address">Адрес: %1$s</string>>
+    <string name="saveButtonText">Сохранить</string>>
+    <string name="route_title">Построить маршрут</string>>
+    <string name="from_title">от</string>>
+    <string name="to_title">до</string>>
+    <string name="build_a_route">Построить</string>>
+    <string name="cannot_build_a_route">Невозможно построить маршрут</string>>
 </resources>

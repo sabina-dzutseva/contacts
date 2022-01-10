@@ -46,13 +46,11 @@ class ContactDetailsViewModelIT : ShouldSpec() {
 
             alarmHandler = AlarmHandler(mockAlarmService)
             mockContactWithData("Иван Иванович", "09.08")
-            `when`(mockContactModel.getContact("0")).thenReturn(mockContact)
+            `when`(mockContactModel.getContact(0)).thenReturn(mockContact)
 
-            viewModel = ContactDetailsViewModel()
-            viewModel.alarmHandler = alarmHandler
-            viewModel.contactModel = mockContactModel
+            viewModel = ContactDetailsViewModel(mockContactModel, alarmHandler)
 
-            viewModel.getContactDetail("0")
+            viewModel.getContactDetail(0)
         }
 
         context("Пользователь нажал на контакт") {
@@ -60,7 +58,7 @@ class ContactDetailsViewModelIT : ShouldSpec() {
 
                 val contact = viewModel.getDetails().value
 
-                contact?.id shouldBe "0"
+                contact?.id shouldBe 0
                 contact?.name shouldBe "Иван Иванович"
                 contact?.birthday shouldBe "09.08"
             }
@@ -70,7 +68,7 @@ class ContactDetailsViewModelIT : ShouldSpec() {
             should("Установка напоминания") {
                 val contact = viewModel.getDetails().value
                 isChecked = true
-                viewModel.handleAlarm("0", isChecked) shouldBe Unit
+                viewModel.handleAlarm(0, isChecked) shouldBe Unit
                 contact?.sendBirthdayNotifications shouldBe true
             }
         }
@@ -79,7 +77,7 @@ class ContactDetailsViewModelIT : ShouldSpec() {
             should("Отмена напоминания") {
                 val contact = viewModel.getDetails().value
                 isChecked = false
-                viewModel.handleAlarm("0", isChecked)
+                viewModel.handleAlarm(0, isChecked)
                 contact?.sendBirthdayNotifications shouldBe false
             }
         }
@@ -87,7 +85,7 @@ class ContactDetailsViewModelIT : ShouldSpec() {
 
 
     private fun mockContactWithData(name: String, birthday: String) {
-        mockContact = Contact("0", "", name, "", "", "", "", birthday, "")
+        mockContact = Contact(0, "", name, "", "", "", "", birthday, "")
     }
 
     private fun changeRxScheduler() {
