@@ -14,24 +14,29 @@ import com.gmail.dzutsevasabina.repository.LocationRepositoryImpl
 import com.gmail.dzutsevasabina.repository.RouteRepositoryImpl
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class RepositoryModule {
+    @Singleton
     @Provides
     fun provideContactRepository(context: Context): ContactRepository {
         return ContactRepositoryImpl(context)
     }
 
+    @Singleton
     @Provides
     fun provideLocationRepository(database: Database): LocationRepository {
         return LocationRepositoryImpl(database)
     }
 
+    @Singleton
     @Provides
     fun provideAddressRepository(service: AddressService): AddressRepository {
         return AddressRepositoryImpl(service)
     }
 
+    @Singleton
     @Provides
     fun provideRouteRepository(service: RouteService): RouteRepository {
         return RouteRepositoryImpl(service)
