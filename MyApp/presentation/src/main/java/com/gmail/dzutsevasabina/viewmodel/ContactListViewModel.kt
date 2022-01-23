@@ -1,10 +1,9 @@
 package com.gmail.dzutsevasabina.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.gmail.dzutsevasabina.interactor.ContactModel
+import com.gmail.dzutsevasabina.interactor.ContactInteractor
 import com.gmail.dzutsevasabina.model.BriefContact
 import com.gmail.dzutsevasabina.viewmodel.mapper.BriefContactMapper
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -13,12 +12,10 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject
 
-class ContactListViewModel : ViewModel() {
+class ContactListViewModel @Inject constructor(var contactModel: ContactInteractor) : ViewModel() {
     private val list = MutableLiveData<List<BriefContact>>()
     private val loadStatus = MutableLiveData<Boolean>()
     private val disposable: CompositeDisposable = CompositeDisposable()
-    @Inject
-    lateinit var contactModel: ContactModel
     private val mapper: BriefContactMapper = BriefContactMapper()
 
     fun getContactsList(query: String) {
@@ -38,7 +35,7 @@ class ContactListViewModel : ViewModel() {
             .subscribe())
     }
 
-    fun getContactId(pos: Int): String? = list.value?.get(pos)?.id
+    fun getContactId(pos: Int) = list.value?.get(pos)?.id
 
     override fun onCleared() {
         super.onCleared()

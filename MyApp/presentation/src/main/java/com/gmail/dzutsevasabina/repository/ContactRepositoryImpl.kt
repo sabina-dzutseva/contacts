@@ -5,14 +5,13 @@ import android.content.Context
 import android.provider.ContactsContract
 import com.gmail.dzutsevasabina.entity.Contact
 import com.gmail.dzutsevasabina.interactor.ContactRepository
-import com.gmail.dzutsevasabina.model.DetailedContact
+import com.gmail.dzutsevasabina.view.URI_IMAGE_NOT_FOUND
 import javax.inject.Inject
 
 class ContactRepositoryImpl @Inject constructor(private val context: Context) : ContactRepository {
     private lateinit var contentResolver: ContentResolver
 
-
-    override fun getContact(id: String): Contact? {
+    override fun getContact(id: Int): Contact? {
         var contact: Contact? = null
 
         val contactsUri = ContactsContract.Contacts.CONTENT_URI
@@ -30,7 +29,7 @@ class ContactRepositoryImpl @Inject constructor(private val context: Context) : 
             if (contactsCursor != null) {
                 if (contactsCursor.moveToNext()) {
 
-                    val image = contactsCursor.getString(
+                    var image = contactsCursor.getString(
                         contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts.PHOTO_URI)
                     )
                     val name = contactsCursor.getString(
@@ -41,6 +40,10 @@ class ContactRepositoryImpl @Inject constructor(private val context: Context) : 
                     val emails: Array<String> = getEmails(id)
                     val birthday = getBirthday(id)
                     val description = getDescription(id)
+
+                    if (image == null) {
+                        image = URI_IMAGE_NOT_FOUND
+                    }
 
                     contact = Contact(
                         id,
@@ -69,14 +72,14 @@ class ContactRepositoryImpl @Inject constructor(private val context: Context) : 
                 contactsCursor ->
             if (contactsCursor != null) {
                 while (contactsCursor.moveToNext()) {
-                    val id = contactsCursor.getString(
+                    val id = contactsCursor.getInt(
                         contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID)
                     )
                     val name = contactsCursor.getString(
                         contactsCursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)
                     )
 
-                    if (name.contains(query)) {
+                    if (name != null && name.contains(query)) {
                         val contact = getContact(id)
                         if (contact != null) {
                             contacts.add(contact)
@@ -88,7 +91,7 @@ class ContactRepositoryImpl @Inject constructor(private val context: Context) : 
         return contacts
     }
 
-    private fun getPhones(id: String): Array<String> {
+    private fun getPhones(id: Int): Array<String> {
         var phone1 = ""
         var phone2 = ""
         val phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
@@ -117,7 +120,7 @@ class ContactRepositoryImpl @Inject constructor(private val context: Context) : 
         return arrayOf(phone1, phone2)
     }
 
-    private fun getEmails(id: String): Array<String> {
+    private fun getEmails(id: Int): Array<String> {
         var email1 = ""
         var email2 = ""
         val emailUri = ContactsContract.CommonDataKinds.Email.CONTENT_URI
@@ -146,14 +149,14 @@ class ContactRepositoryImpl @Inject constructor(private val context: Context) : 
         return arrayOf(email1, email2)
     }
 
-    private fun getBirthday(id: String): String {
+    private fun getBirthday(id: Int): String {
         var birthday = ""
 
         contentResolver.query(
             ContactsContract.Data.CONTENT_URI,
             arrayOf(ContactsContract.CommonDataKinds.Event.START_DATE),
             ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
-            arrayOf(id, ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE),
+            arrayOf(id.toString(), ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE),
             null
         ).use {
                 birthdayCursor ->
@@ -167,20 +170,20 @@ class ContactRepositoryImpl @Inject constructor(private val context: Context) : 
         return birthday
     }
 
-    private fun getDescription(id: String): String {
+    private fun getDescription(id: Int): String {
         var description = ""
 
         contentResolver.query(
             ContactsContract.Data.CONTENT_URI,
             arrayOf(ContactsContract.CommonDataKinds.Note.NOTE),
             ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
-            arrayOf(id, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE),
+            arrayOf(id.toString(), ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE),
             null
         ).use {
                 noteCursor ->
             if (noteCursor != null) {
                 if (noteCursor.moveToNext()) {
-                    description = noteCursor.getString(0)
+                    noteCursor.getString(0)?.let { description = it }
                 }
             }
         }

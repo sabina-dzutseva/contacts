@@ -5,17 +5,17 @@ import androidx.arch.core.executor.TaskExecutor
 import com.gmail.dzutsevasabina.entity.Contact
 import com.gmail.dzutsevasabina.interactor.ContactModel
 import com.gmail.dzutsevasabina.viewmodel.AlarmHandler
-import io.kotest.core.spec.style.ShouldSpec
-import io.kotest.matchers.shouldBe
-import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import com.gmail.dzutsevasabina.viewmodel.AlarmServiceImpl
 import com.gmail.dzutsevasabina.viewmodel.ContactDetailsViewModel
 import io.reactivex.rxjava3.android.plugins.RxAndroidPlugins
 import io.kotest.core.listeners.TestListener
 import io.kotest.core.spec.Spec
+import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.shouldBe
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import io.reactivex.rxjava3.schedulers.Schedulers
+import org.junit.runner.RunWith
 import org.mockito.*
 import org.mockito.Mockito.*
 
@@ -46,13 +46,11 @@ class ContactDetailsViewModelIT : ShouldSpec() {
 
             alarmHandler = AlarmHandler(mockAlarmService)
             mockContactWithData("Иван Иванович", "09.08")
-            `when`(mockContactModel.getContact("0")).thenReturn(mockContact)
+            `when`(mockContactModel.getContact(0)).thenReturn(mockContact)
 
-            viewModel = ContactDetailsViewModel()
-            viewModel.alarmHandler = alarmHandler
-            viewModel.contactModel = mockContactModel
+            viewModel = ContactDetailsViewModel(mockContactModel, alarmHandler)
 
-            viewModel.getContactDetail("0")
+            viewModel.getContactDetail(0)
         }
 
         context("Пользователь нажал на контакт") {
@@ -60,7 +58,7 @@ class ContactDetailsViewModelIT : ShouldSpec() {
 
                 val contact = viewModel.getDetails().value
 
-                contact?.id shouldBe "0"
+                contact?.id shouldBe 0
                 contact?.name shouldBe "Иван Иванович"
                 contact?.birthday shouldBe "09.08"
             }
@@ -70,7 +68,7 @@ class ContactDetailsViewModelIT : ShouldSpec() {
             should("Установка напоминания") {
                 val contact = viewModel.getDetails().value
                 isChecked = true
-                viewModel.handleAlarm("0", isChecked) shouldBe Unit
+                viewModel.handleAlarm(0, isChecked) shouldBe Unit
                 contact?.sendBirthdayNotifications shouldBe true
             }
         }
@@ -79,14 +77,15 @@ class ContactDetailsViewModelIT : ShouldSpec() {
             should("Отмена напоминания") {
                 val contact = viewModel.getDetails().value
                 isChecked = false
-                viewModel.handleAlarm("0", isChecked)
+                viewModel.handleAlarm(0, isChecked)
                 contact?.sendBirthdayNotifications shouldBe false
             }
         }
     }
 
+
     private fun mockContactWithData(name: String, birthday: String) {
-        mockContact = Contact("0", "", name, "", "", "", "", birthday, "")
+        mockContact = Contact(0, "", name, "", "", "", "", birthday, "")
     }
 
     private fun changeRxScheduler() {

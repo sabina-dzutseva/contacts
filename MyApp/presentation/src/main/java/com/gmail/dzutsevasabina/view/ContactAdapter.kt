@@ -37,7 +37,6 @@ class ContactAdapter(private val actionListener: (pos: Int) -> Unit):
 
         override fun areContentsTheSame(oldItem: BriefContact, newItem: BriefContact): Boolean {
             return (oldItem.name == newItem.name) && (oldItem.phoneNumber1 == newItem.phoneNumber1)
-
         }
     }
 }

@@ -4,7 +4,7 @@ import com.gmail.dzutsevasabina.entity.Contact
 
 class ContactModel(private val contactRepository: ContactRepository) : ContactInteractor {
 
-    override fun getContact(id: String): Contact? {
+    override fun getContact(id: Int): Contact? {
         return contactRepository.getContact(id)
     }
 

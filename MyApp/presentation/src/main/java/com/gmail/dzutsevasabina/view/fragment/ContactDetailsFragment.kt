@@ -6,39 +6,47 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gmail.dzutsevasabina.R
 import com.gmail.dzutsevasabina.databinding.FragmentDetailsBinding
 import com.gmail.dzutsevasabina.di.IApp
 import com.gmail.dzutsevasabina.model.DetailedContact
+import com.gmail.dzutsevasabina.view.ARG_ID
+import com.gmail.dzutsevasabina.view.ID_KEY
+import com.gmail.dzutsevasabina.view.MAP_CONTACT_ID_REQUEST_KEY
+import com.gmail.dzutsevasabina.view.setTextOrChangeVisibility
 import com.gmail.dzutsevasabina.viewmodel.ContactDetailsViewModel
+import com.gmail.dzutsevasabina.viewmodel.ViewModelFactory
 import javax.inject.Inject
 
-const val ARG_ID = "ARG_ID"
-
-class ContactDetailsFragment : Fragment(), View.OnClickListener {
+class ContactDetailsFragment : Fragment() {
 
     private var listener: View.OnClickListener? = null
 
     private var _detailsBinding: FragmentDetailsBinding? = null
     private val detailsBinding get() = _detailsBinding!!
 
-    var detailsViewModel: ContactDetailsViewModel? = null
+    lateinit var viewModelFactory: ViewModelFactory
     @Inject set
+
+    var detailsViewModel: ContactDetailsViewModel? = null
 
     private var progressBar: ProgressBar? = null
 
     private var checkBoxTitle: TextView? = null
     private var checkBox: CheckBox? = null
+
+    private var mapLocationTitle: TextView? = null
+    private var mapLocationButton: ImageButton? = null
+
+    private var notificationViewsVisibility = true
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -48,8 +56,7 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
         val detailsComponent = appComp?.plusContactDetailsComponent()
         detailsComponent?.inject(this)
 
-        val viewModelComponent = appComp?.plusViewModelComponent()
-        viewModelComponent?.inject(detailsViewModel)
+        detailsViewModel = ViewModelProvider(this, viewModelFactory)[ContactDetailsViewModel::class.java]
 
         if (context is View.OnClickListener) {
             listener = context
@@ -71,31 +78,39 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
 
         val context = context
         if (context is AppCompatActivity) {
-            context.supportActionBar?.title = getString(R.string.fragment2_title)
+            context.supportActionBar?.title = getString(R.string.details_fragment_title)
 
-            detailsViewModel?.getDetails()?.observe(context) {
+            detailsViewModel?.getDetails()?.observe(viewLifecycleOwner) {
                 setViews(it)
             }
 
-            progressBar = detailsBinding.progressBarDetails
-            checkBoxTitle = detailsBinding.birthdayNotificationTitle
-            checkBox = detailsBinding.birthdayNotificationButton
+            with(detailsBinding) {
+                progressBar = progressBarDetails
+                checkBoxTitle = birthdayNotificationTitle
+                checkBox = birthdayNotificationButton
+                mapLocationTitle = locationTitle
+                mapLocationButton = locationButton
+            }
+
 
             detailsViewModel?.getLoadStatus()?.observe(viewLifecycleOwner) {
-                progressBar?.visibility = if (it) View.VISIBLE else View.GONE
+                progressBar?.isVisible = it
 
-                val checkBoxVisibility = if (it) View.GONE else View.VISIBLE
-                checkBoxTitle?.visibility = checkBoxVisibility
-                checkBox?.visibility = checkBoxVisibility
+                var visibility = if (it) false else notificationViewsVisibility
+                checkBoxTitle?.isVisible = visibility
+                checkBox?.isVisible = visibility
+
+                visibility = !it
+                mapLocationTitle?.isVisible = visibility
+                mapLocationButton?.isVisible = visibility
             }
         }
 
-        val id = arguments?.getString(ARG_ID)
+        val id = arguments?.getInt(ARG_ID)
 
         if (id != null && context != null) {
             detailsViewModel?.getContactDetail(id)
         }
-
 
         return detailsBinding.root
     }
@@ -105,6 +120,8 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
         progressBar = null
         checkBoxTitle = null
         checkBox = null
+        mapLocationTitle = null
+        mapLocationButton = null
     }
 
     private fun setViews(contact: DetailedContact) {
@@ -116,37 +133,67 @@ class ContactDetailsFragment : Fragment(), View.OnClickListener {
 
                 contactName.text = contact.name
 
-                birthdayTitle.text = getString(R.string.birthday)
                 birthday.text = contact.birthday
 
-                contactPhoneNumber1.text = contact.phoneNumber1
-                contactPhoneNumber2.text = contact.phoneNumber2
+                contactPhoneNumber1.setTextOrChangeVisibility(contact.phoneNumber1)
+                contactPhoneNumber2.setTextOrChangeVisibility(contact.phoneNumber2)
 
-                contactEmail1.text = contact.email1
-                contactEmail2.text = contact.email2
+                contactEmail1.setTextOrChangeVisibility(contact.email1)
+                contactEmail2.setTextOrChangeVisibility(contact.email2)
 
-                contactDescription.text = contact.description
+                contactDescription.setTextOrChangeVisibility(contact.description)
 
-                val button = birthdayNotificationButton
-                button.isChecked = contact.sendBirthdayNotifications
-                button.setOnClickListener { onClick(button) }
+                if (contact.birthday.isNotEmpty()) {
+                    val button = birthdayNotificationButton
+                    button.isChecked = contact.sendBirthdayNotifications
+                    button.setOnClickListener { if (it is CheckBox) onCheckBoxClick(it) }
+                    notificationViewsVisibility = true
+                } else {
+                    notificationViewsVisibility = false
+                }
+
+                birthdayTitle.isVisible = notificationViewsVisibility
+                birthday.isVisible = notificationViewsVisibility
+                birthdayNotificationTitle.isVisible = notificationViewsVisibility
+                birthdayNotificationButton.isVisible = notificationViewsVisibility
+
+                phoneNumbersTitle.isVisible = contactPhoneNumber1.isVisible
+                emailsTitle.isVisible = contactEmail1.isVisible
+                descriptionTitle.isVisible = contactDescription.isVisible
+
+                val mapButton = locationButton
+                mapButton.setOnClickListener { onMapButtonClick() }
             }
         }
     }
 
     companion object {
-        fun newInstance(id: String) = ContactDetailsFragment().apply {
+        fun newInstance(id: Int) = ContactDetailsFragment().apply {
             arguments = bundleOf(
                 ARG_ID to id
             )
         }
     }
 
-    override fun onClick(view: View?) {
-        if (view is CheckBox) {
+    private fun onMapButtonClick() {
+        val context = context
+        val id = arguments?.getInt(ARG_ID)
+        if (id != null) {
+            if (context is AppCompatActivity) {
+                context.supportFragmentManager.setFragmentResult(
+                    MAP_CONTACT_ID_REQUEST_KEY,
+                    bundleOf(ID_KEY to id)
+                )
+            }
+        }
+    }
+
+    private fun onCheckBoxClick(button: CheckBox) {
+        val id = arguments?.getInt(ARG_ID)
+        if (id != null && id != -1) {
             detailsViewModel?.handleAlarm(
-                arguments?.getString(ARG_ID),
-                view.isChecked)
+                id,
+                button.isChecked)
         }
     }
 }
