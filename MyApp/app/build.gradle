@@ -2,6 +2,15 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id "io.gitlab.arturbosch.detekt" version "1.19.0"
+    id "org.jlleitschuh.gradle.ktlint" version "9.2.1"
+}
+
+subprojects {
+    apply plugin: "org.jlleitschuh.gradle.ktlint"
+    ktlint {
+        debug = false
+    }
 }
 
 android {
@@ -13,6 +22,8 @@ android {
         targetSdk 31
         versionCode 1
         versionName "1.0"
+
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,6 +46,14 @@ android {
         enabled = true
     }
 }
+
+detekt {
+    toolVersion = "1.19.0"
+    config = files("config/detekt/detekt.yml")
+    buildUponDefaultConfig = true
+}
+
+tasks.detekt.jvmTarget = "1.8"
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.6.0'

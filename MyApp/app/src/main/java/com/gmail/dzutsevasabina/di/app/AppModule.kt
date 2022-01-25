@@ -1,9 +1,9 @@
 package com.gmail.dzutsevasabina.di.app
 
-import dagger.Module
-import javax.inject.Singleton
 import android.content.Context
+import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
 class AppModule(val context: Context) {

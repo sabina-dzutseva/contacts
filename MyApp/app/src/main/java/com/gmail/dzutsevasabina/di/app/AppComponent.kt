@@ -5,14 +5,16 @@ import com.gmail.dzutsevasabina.di.components.ContactDetailsComponent
 import com.gmail.dzutsevasabina.di.components.ContactsListComponent
 import com.gmail.dzutsevasabina.di.components.MapComponent
 import com.gmail.dzutsevasabina.di.components.RouteComponent
-import com.gmail.dzutsevasabina.di.viewmodel.*
-import com.gmail.dzutsevasabina.di.viewmodel.details.AlarmServiceModule
-import com.gmail.dzutsevasabina.di.viewmodel.ViewModelModule
+import com.gmail.dzutsevasabina.di.viewmodel.NetworkModule
+import com.gmail.dzutsevasabina.di.viewmodel.RepositoryModule
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AppModule::class, NetworkModule::class])
+@Component(modules = [
+    AppModule::class,
+    NetworkModule::class,
+    RepositoryModule::class])
 interface AppComponent : IAppComponent {
     override fun plusContactsListComponent(): ContactsListComponent
     override fun plusContactDetailsComponent(): ContactDetailsComponent

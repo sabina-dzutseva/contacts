@@ -2,7 +2,11 @@ package com.gmail.dzutsevasabina.di.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.gmail.dzutsevasabina.viewmodel.*
+import com.gmail.dzutsevasabina.viewmodel.ContactDetailsViewModel
+import com.gmail.dzutsevasabina.viewmodel.ContactListViewModel
+import com.gmail.dzutsevasabina.viewmodel.MapViewModel
+import com.gmail.dzutsevasabina.viewmodel.RouteViewModel
+import com.gmail.dzutsevasabina.viewmodel.ViewModelFactory
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

@@ -5,12 +5,12 @@ import com.gmail.dzutsevasabina.network.RouteService
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Named
-import javax.inject.Singleton
 
 private const val GEOPOS_BASE_URL = "https://geocode-maps.yandex.ru/1.x/"
 private const val DIRECTIONS_BASE_URL = "https://maps.googleapis.com/maps/api/directions/"
@@ -50,7 +50,6 @@ class NetworkModule {
         .addConverterFactory(GsonConverterFactory.create(gson))
         .client(okHttpClient)
         .build()
-
 
     @Singleton
     @Provides
